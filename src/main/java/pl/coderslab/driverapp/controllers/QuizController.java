@@ -1,8 +1,12 @@
 package pl.coderslab.driverapp.controllers;
 
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.coderslab.driverapp.DTO.QuizDTO;
 import pl.coderslab.driverapp.models.Quiz;
 import pl.coderslab.driverapp.services.QuizService;
@@ -42,5 +46,13 @@ public class QuizController {
         return ResponseEntity.ok(quizService.updateQuiz(id,quizDTO));
     }
 
-
+    @PostMapping
+    public ResponseEntity<Void> createNewQuiz(@Valid @RequestBody QuizDTO quizDTO
+            , UriComponentsBuilder uriComponentsBuilder) {
+        Long id = quizService.createNewQuiz(quizDTO);
+        UriComponents uriComponents = uriComponentsBuilder.path("/quizzes/{id}").buildAndExpand(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return  new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+    }
 }
